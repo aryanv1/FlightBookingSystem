@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="34b7ffb2-df3c-4278-b96a-1ea7f46f3edd" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/flightbooking/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/flightbooking/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/flightbooking/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/flightbooking/service/AuthService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,7 +63,7 @@
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+    "settings.editor.selected.configurable": "preferences.keymap",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -94,11 +96,15 @@
       <workItem from="1759845373535" duration="3000" />
       <workItem from="1759845388957" duration="3163000" />
       <workItem from="1759851658414" duration="10989000" />
-      <workItem from="1760096329395" duration="12267000" />
+      <workItem from="1760096329395" duration="26585000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

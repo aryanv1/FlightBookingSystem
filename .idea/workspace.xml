@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="34b7ffb2-df3c-4278-b96a-1ea7f46f3edd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/flightbooking/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/flightbooking/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/flightbooking/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/flightbooking/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/project/flightbooking/security/JwtTokenProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/project/flightbooking/security/JwtTokenProvider.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +96,7 @@
       <workItem from="1759845373535" duration="3000" />
       <workItem from="1759845388957" duration="3163000" />
       <workItem from="1759851658414" duration="10989000" />
-      <workItem from="1760096329395" duration="26585000" />
+      <workItem from="1760096329395" duration="38685000" />
     </task>
     <servers />
   </component>

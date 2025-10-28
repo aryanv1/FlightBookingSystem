@@ -31,13 +31,24 @@ public class JwtTokenProvider {
     public String generateAccessToken(String username, String role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtExpirationMs);
-        return Jwts.builder()
-                .setSubject(username)
-                .claim("role", role)
-                .setIssuedAt(now)
-                .setExpiration(expiry)
-                .signWith(key, SignatureAlgorithm.HS256)
+        // io.jsonwebtoken (JJWT) library to create and sign a JWT
+        // 'JWT' has three parts:
+        // 1. Header - Algorithm + Token type
+        // 2. Payload - Claims(User data and metadata)
+        // 3. Signature - Cryptographic proof of authenticity
+        return Jwts.builder() // its jwt builder object stating i am about to build new token
+                .setSubject(username) // claim stating unique identity of the user
+                .claim("role", role) // adding custom claim to jwt payload
+                // custom claims later used for authorization -> only admin can access certain endpoints
+                .setIssuedAt(now) // timestamp of token created
+                .setExpiration(expiry) // time after which token becomes invalid
+                .signWith(key, SignatureAlgorithm.HS256) // digitally signs the token
+                // key - the secret key used to sign and later verify the code
+                // SignatureAlgorithm - The algorithm used
+                // So the library takes your header + payload, generates
+                // a hash using the secret key, and produces the signature.
                 .compact();
+                // assembles everything (header + payload + signature) into one encoded string
     }
 
     public boolean validateToken(String token) {

@@ -43,6 +43,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req, HttpServletResponse response) {
+        // HttpServletResponse = “the raw HTTP response being built and sent back to the browser.”
+        // It lets us add cookies -> It's a low-level servlet object if you need manual control.
+
         // AuthService.AuthResponse resp = authService.login(req);
         // JwtAuthResponse r = new JwtAuthResponse(resp.getAccessToken(), resp.getTokenType(), resp.getRefreshToken());
         // return ResponseEntity.ok(r);

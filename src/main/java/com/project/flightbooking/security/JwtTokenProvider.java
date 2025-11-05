@@ -21,12 +21,26 @@ public class JwtTokenProvider {
 
     private Key key;
 
+    // Initialization Hook
+    // special method marked with @PostConstruct that runs immediately
+    // after dependency injection is done but before the bean is used.
+    // Spring created instance of JwtTokenProvider after scanning the application
+    // And then before using this instance initialize the jwtSecret with its value from application.properties
     @PostConstruct
     public void init() {
         // Use raw bytes (must be at least 256 bits for HS256)
         byte[] secretBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+        // converts Base64 or plain secret string into a Key object
+        // used by the JJWT library to sign and verify tokens.
         this.key = Keys.hmacShaKeyFor(secretBytes);
     }
+    // If we do not use PostConstruct
+    // Then the jwtSecret might still be null when your constructor runs (Spring injects later).
+    // We cannot initialize these inside constructors because:
+    // public JwtTokenProvider() {
+    //    this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    //}
+    // The constructor injection happens before @Value fields are populated. So it can still be NULL.
 
     public String generateAccessToken(String username, String role) {
         Date now = new Date();
@@ -36,7 +50,7 @@ public class JwtTokenProvider {
         // 1. Header - Algorithm + Token type
         // 2. Payload - Claims(User data and metadata)
         // 3. Signature - Cryptographic proof of authenticity
-        return Jwts.builder() // its jwt builder object stating i am about to build new token
+        return Jwts.builder() // its jwt builder object stating I am about to build new token
                 .setSubject(username) // claim stating unique identity of the user
                 .claim("role", role) // adding custom claim to jwt payload
                 // custom claims later used for authorization -> only admin can access certain endpoints

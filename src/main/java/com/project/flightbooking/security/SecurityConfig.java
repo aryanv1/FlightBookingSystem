@@ -14,7 +14,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-
+    // It is spring security policy definition
+    // It tells spring:
+    // Which endpoints are public? Which require authentication? What filters should I use?
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService userDetailsService;
 
@@ -31,17 +33,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable()) // CSRF protection only applies to web sessions using cookies.
+                // our API uses stateless JWTs in headers → no CSRF risk -> Hence disabled
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
+                // Tells Spring Security:
+                // “Run my custom JWT filter before your built-in username/password filter.”
+                // Other filter of spring include UsernamePasswordAuthenticationFilter and many other
+                // This allows Spring Security to process JWTs instead of form-based logins.
                 .addFilterBefore(jwtAuthenticationFilter(), org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // Password hashing algorithm
         return new BCryptPasswordEncoder();
     }
 }

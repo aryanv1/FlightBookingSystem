@@ -1,4 +1,4 @@
-# Flight Booking System (Spring Boot skeleton)
+# Flight Booking System
 
 This is a generated starter project for the Flight Booking System backend.
 

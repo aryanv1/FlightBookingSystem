@@ -36,7 +36,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF protection only applies to web sessions using cookies.
                 // our API uses stateless JWTs in headers → no CSRF risk -> Hence disabled
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        // path-based matchers
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")   // <--- only ADMIN
                         .anyRequest().authenticated()
                 )
                 // Tells Spring Security:

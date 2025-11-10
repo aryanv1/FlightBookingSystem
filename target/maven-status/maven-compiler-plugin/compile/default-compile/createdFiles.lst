@@ -8,9 +8,11 @@ com/project/flightbooking/dto/BookingResponse.class
 com/project/flightbooking/service/FlightService.class
 com/project/flightbooking/enums/RefundStatus.class
 com/project/flightbooking/enums/PaymentStatus.class
+com/project/flightbooking/controller/AdminFlightController.class
 com/project/flightbooking/dto/BookingRequest.class
 com/project/flightbooking/repository/RefundRepository.class
 com/project/flightbooking/repository/PaymentRepository.class
+com/project/flightbooking/enums/BookingStatus.class
 com/project/flightbooking/model/Refund.class
 com/project/flightbooking/service/CustomUserDetailsService.class
 com/project/flightbooking/dto/RegisterRequest.class
@@ -19,6 +21,7 @@ com/project/flightbooking/config/SwaggerConfig.class
 com/project/flightbooking/controller/AuthController.class
 com/project/flightbooking/security/SecurityConfig.class
 com/project/flightbooking/controller/BookingController.class
+com/project/flightbooking/dto/FlightRequest.class
 com/project/flightbooking/service/AuthService.class
 com/project/flightbooking/service/AuthService$AuthResponse.class
 com/project/flightbooking/repository/UserRepository.class

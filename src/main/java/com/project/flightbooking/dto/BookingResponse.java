@@ -1,10 +1,16 @@
 package com.project.flightbooking.dto;
 
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
 public class BookingResponse {
-    private String bookingCode;
-    private Double totalAmount;
-    public String getBookingCode() { return bookingCode; }
-    public void setBookingCode(String bookingCode) { this.bookingCode = bookingCode; }
-    public Double getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
+    private String bookingRef;
+    private Long flightId;
+    private Integer seatCount;
+    private BigDecimal totalFare;
+    private String status;
+    private LocalDateTime createdAt;
 }

@@ -31,7 +31,7 @@ public class User {
     private String phone;
 
     @Column(nullable = false, length = 20)
-    private String role = "USER"; // ADMIN or USER
+    private String role; // ADMIN or USER
 
     @Column(nullable = false)
     private Boolean isActive = true;

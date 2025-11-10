@@ -5,21 +5,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FlightResponse {
-    private Long id;
+public class FlightRequest {
     private String flightNumber;
     private String airline;
     private String origin;
     private String destination;
-    private ZonedDateTime departureTime;
-    private ZonedDateTime arrivalTime;
+    private String departureTime; // ISO string e.g. 2026-01-15T09:30:00+05:30
+    private String arrivalTime;
     private Integer totalSeats;
-    private Integer remainingSeats;
     private BigDecimal baseFare;
-    private String status;
+
 }

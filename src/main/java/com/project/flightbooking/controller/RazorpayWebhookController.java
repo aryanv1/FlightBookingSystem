@@ -1,6 +1,7 @@
 package com.project.flightbooking.controller;
 
 import com.project.flightbooking.service.PaymentService;
+import com.project.flightbooking.service.RefundService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +30,11 @@ public class RazorpayWebhookController {
     private String webhookSecret;
 
     private final PaymentService paymentService;
+    private final RefundService refundService;
 
-    public RazorpayWebhookController(PaymentService paymentService) {
+    public RazorpayWebhookController(PaymentService paymentService, RefundService refundService) {
         this.paymentService = paymentService;
+        this.refundService = refundService;
     }
 
     @PostMapping("/webhook")
@@ -71,6 +74,16 @@ public class RazorpayWebhookController {
                     String reason = paymentEntity.optString("error_description", "Unknown error");
 
                     paymentService.markPaymentFailed(orderId, paymentId, reason);
+                }
+
+                case "refund.processed", "refund.updated" -> {
+                    JSONObject refundEntity = json.getJSONObject("payload")
+                            .getJSONObject("refund").getJSONObject("entity");
+                    String providerRefundId = refundEntity.getString("id");
+                    // Some payloads include status; determine success by status or event type
+                    String status = refundEntity.optString("status", "processed");
+                    boolean success = "processed".equalsIgnoreCase(status) || "success".equalsIgnoreCase(status);
+                    refundService.handleRefundWebhook(providerRefundId, payload, success);
                 }
 
                 default -> System.out.println("Unhandled event type: " + event);

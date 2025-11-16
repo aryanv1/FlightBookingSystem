@@ -1,5 +1,6 @@
 package com.project.flightbooking.controller;
 
+import com.project.flightbooking.dto.RefundDto;
 import com.project.flightbooking.model.RefundTransaction;
 import com.project.flightbooking.service.RefundService;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,23 @@ public class RefundController {
     public ResponseEntity<?> initiateRefund(@PathVariable String bookingRef) {
         try {
             RefundTransaction rt = refundService.initiateRefund(bookingRef);
-            return ResponseEntity.ok(rt);
+            RefundDto refDto = toResponse(rt);
+            return ResponseEntity.ok(refDto);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    private RefundDto toResponse(RefundTransaction r) {
+        if (r == null) return null;
+        return new RefundDto(
+                r.getId(),
+                r.getProviderRefundId(),
+                r.getProviderPaymentId(),
+                r.getAmount(),
+                r.getStatus() == null ? null : r.getStatus().name(),
+                r.getCreatedAt(),
+                r.getUpdatedAt()
+        );
     }
 }

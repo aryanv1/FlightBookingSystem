@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Razorpay Test Payment</title></head>
+<body>
+<h3>Razorpay Checkout - Test</h3>
+<label>Key ID:</label><br/>
+<input id="key_id" value="rzp_test_xxx" style="width:400px"/><br/><br/>
+
+<label>Order ID:</label><br/>
+<input id="order_id" value="order_xxx" style="width:400px"/><br/><br/>
+
+<button onclick="payNow()">Pay Now</button>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    function payNow() {
+        const key = document.getElementById('key_id').value.trim();
+        const orderId = document.getElementById('order_id').value.trim();
+        if(!key || !orderId) { alert('fill key and order id'); return; }
+
+        const options = {
+            key: key,
+            order_id: orderId,          // IMPORTANT: Razorpay will use this order_id
+            name: "Flight Booking System (Test)",
+            description: "Test payment",
+            handler: function (response){
+                // called on success in the browser
+                alert("Payment complete!\nPayment ID: " + response.razorpay_payment_id
+                    + "\nOrder ID: " + response.razorpay_order_id);
+                console.log(response);
+            },
+            modal: {
+                ondismiss: function(){ console.log("Checkout closed by user"); }
+            },
+            prefill: {
+                name: "Test User",
+                email: "test@example.com",
+                contact: "9999999999"
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+    }
+</script>
+</body>
+</html>

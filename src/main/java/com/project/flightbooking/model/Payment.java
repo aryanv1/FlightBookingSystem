@@ -25,7 +25,7 @@ public class Payment {
     @Column(nullable = false)
     private String provider = "RAZORPAY";
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String providerPaymentId; // e.g. pay_LXyI9sTtHjvL7G
 
     @Column(nullable = false)

@@ -21,13 +21,17 @@ public class BookingService {
     private final FlightRepository flightRepository;
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
+    private final PricingService pricingService;
 
+    // Add PricingService to constructor injection
     public BookingService(FlightRepository flightRepository,
                           BookingRepository bookingRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          PricingService pricingService) {
         this.flightRepository = flightRepository;
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
+        this.pricingService = pricingService;
     }
 
     /**
@@ -57,8 +61,10 @@ public class BookingService {
             throw new IllegalStateException("Not enough seats available. remaining=" + flight.getRemainingSeats());
         }
 
-        // compute farePerSeat via simple baseFare (hook for pricing engine later)
-        BigDecimal farePerSeat = flight.getBaseFare();
+        // -----------------------------
+        // DYNAMIC PRICING: compute fare per seat using PricingService
+        // -----------------------------
+        BigDecimal farePerSeat = pricingService.calculateDynamicFare(flight);
         Booking booking = Booking.create(user, flight, seatsRequested, farePerSeat);
 
         // decrement remaining seats and persist

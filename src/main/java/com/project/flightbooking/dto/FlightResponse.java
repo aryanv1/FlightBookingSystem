@@ -21,5 +21,6 @@ public class FlightResponse {
     private Integer totalSeats;
     private Integer remainingSeats;
     private BigDecimal baseFare;
+    private BigDecimal dynamicFare;
     private String status;
 }

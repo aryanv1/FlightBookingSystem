@@ -1,6 +1,7 @@
 package com.project.flightbooking.service;
 
 import com.project.flightbooking.dto.FlightRequest;
+import com.project.flightbooking.dto.FlightResponse;
 import com.project.flightbooking.model.Flight;
 import com.project.flightbooking.repository.FlightRepository;
 import org.springframework.data.domain.Page;
@@ -10,15 +11,18 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class FlightService {
 
     private final FlightRepository flightRepository;
+    private final PricingService pricingService;
 
-    public FlightService(FlightRepository flightRepository) {
+    public FlightService(FlightRepository flightRepository, PricingService pricingService) {
         this.flightRepository = flightRepository;
+        this.pricingService = pricingService;
     }
 
     public Flight createFlight(FlightRequest req) {
@@ -48,5 +52,9 @@ public class FlightService {
 
     public Page<Flight> search(String origin, String destination, ZonedDateTime from, ZonedDateTime to, Pageable pageable) {
         return flightRepository.findByOriginAndDestinationAndDepartureTimeBetween(origin, destination, from, to, pageable);
+    }
+
+    public List<Flight> findAll() {
+        return flightRepository.findAll();
     }
 }

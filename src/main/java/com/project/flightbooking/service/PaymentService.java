@@ -137,7 +137,7 @@ public class PaymentService {
                 .append("Seats booked: ").append(booking.getSeatCount()).append("\n")
                 .append("Amount: ").append(booking.getTotalFare()).append("\n")
                 .append("Payment ID: ").append(paymentId).append("\n\n")
-                .append("Thank you,\nAppName")
+                .append("Thank you,\nStarlight Airways")
                 .toString();
 
         emailService.sendPlainEmail(to, subject, body);
@@ -194,7 +194,7 @@ public class PaymentService {
                 .append("Flight: ").append(booking.getFlight().getFlightNumber()).append("\n")
                 .append("Seats reserved (released): ").append(booking.getSeatCount()).append("\n")
                 .append("Please try booking again.\n\n")
-                .append("Regards,\nAppName")
+                .append("Regards,\nStarlight Airways")
                 .toString();
 
         emailService.sendPlainEmail(to, subject, body);

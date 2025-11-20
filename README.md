@@ -15,9 +15,9 @@ It includes:
 * Clean layered architecture with DTO mapping
 * Fully modular, extensible, and scalable backend
 
-**🛠️ Tech Stack**
+## **🛠️ Tech Stack**
 
-Backend
+### Backend
 * Java 17
 * Spring Boot 3
 * Spring MVC
@@ -25,17 +25,17 @@ Backend
 * Spring Data JPA (Hibernate)
 * MySQL
 
-Integrations
+### Integrations
 * Razorpay (Orders + Refunds + Webhooks)
 * SMTP Email Server
 * Ngrok (for webhook testing)
 
-Dev Tools
+### Dev Tools
 * Maven
 * Lombok
 * IntelliJ IDEA
 
-**🏛 System Architecture**
+## **🏛 System Architecture**
 
                            ┌───────────────────────────┐
                            │   Client / Frontend /     │
@@ -94,99 +94,106 @@ Dev Tools
                                    │  refunds)      │
                                    └────────────────┘
 
-External Integrations:
+### External Integrations:
   * Razorpay Payments API
   * Razorpay Refunds Webhooks
   * SMTP Email Server
   * JWT Security Filters
 
-**🚀 Features**
+## **🚀 Features**
 
-1. Authentication & Authorization 
+### 1. Authentication & Authorization 
+
    * JWT Access Token
    * HttpOnly Secure Refresh Token
    * Role-based access (ADMIN, USER)
    * Password hashing with BCrypt
 
-2. Flight Management (Admin Only)
+### 2. Flight Management (Admin Only)
+
    * Add / update / delete flights
    * Search flights with filters
    * Real-time seat availability
 
-3. Dynamic Pricing Engine
+### 3. Dynamic Pricing Engine
+
    * Price increases as seats fill
    * Time-to-departure surge
    * Demand-based adjustments
    * Final fare = baseFare × multiplier
 
-4. Booking Engine
+### 4. Booking Engine
+
    * Pessimistic locking → prevents overbooking
    * Seat reservation (PENDING)
    * Automatic seat release on payment failure
    * Booking confirmations and fetch APIs
 
-5. Payment Module (Razorpay)
+### 5. Payment Module (Razorpay)
+
    * Razorpay Order creation
    * Payment success/failure via webhooks
    * Idempotent payment handling
    * Secure business-state updates
 
-6. Refund Module
+### 6. Refund Module
+
    * Policy-based refund % (time-based tiers)
    * Razorpay refund initiation
    * Webhook-based refund settlement
    * Idempotency + seat restoration
 
-7. Email Notifications
+### 7. Email Notifications
+
    * Payment Successful
    * Payment Failed
    * Refund Initiated
    * Refund Successful
 
-**📡 API Endpoints**
+## **📡 API Endpoints**
 
-AUTH
+#### AUTH
 
     POST /api/auth/register
     POST /api/auth/login
     POST /api/auth/refresh
 
-ADMIN FLIGHTS
+#### ADMIN FLIGHTS
 
     POST   /api/admin/flights
     PUT    /api/admin/flights/{id}
     DELETE /api/admin/flights/{id}
 
-FLIGHTS (Public)
+#### FLIGHTS (Public)
 
     GET /api/flights
     GET /api/flights/{id}
 
-BOOKINGS
+#### BOOKINGS
 
     POST /api/bookings
     GET  /api/bookings/{bookingRef}
 
-PAYMENTS
+#### PAYMENTS
 
     POST /api/payments/create/{bookingRef}
     POST /api/payments/webhook
 
-REFUNDS
+#### REFUNDS
 
     POST /api/refunds/initiate/{bookingRef}
     POST /api/refunds/webhook
 
-**🧪 Testing Flow**
+## **🧪 Testing Flow**
 
-Booking + Payment
+### Booking + Payment
 1.	Create booking → returns PENDING
 2.	Create Razorpay Order
 3.	Pay via Razorpay Checkout
 4.	Razorpay → your webhook (ngrok URL)
 5.	Booking becomes CONFIRMED
 
-Refund
+### Refund
 1.	Call /api/refunds/initiate/{bookingRef}
 2.	Razorpay → refund webhook
 3.	Booking becomes REFUNDED

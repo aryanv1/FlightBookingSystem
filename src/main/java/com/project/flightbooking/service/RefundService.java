@@ -134,7 +134,7 @@ public class RefundService {
                     .append("Requested amount: ").append(refundAmount).append("\n")
                     .append("Status: INITIATED\n\n")
                     .append("You will receive another email once refund is processed.\n\n")
-                    .append("Regards,\nAppName")
+                    .append("Regards,\nStarlight Airways")
                     .toString();
 
             emailService.sendPlainEmail(to, subject, body);
@@ -241,7 +241,7 @@ public class RefundService {
                             .append("Refund amount: ").append(rt.getAmount()).append("\n")
                             .append("Provider refund ID: ").append(providerRefundId).append("\n\n")
                             .append("It may take a 5-7 business days to reflect in your account.\n\n")
-                            .append("Regards,\nAppName")
+                            .append("Regards,\nStarlight Airways")
                             .toString();
 
                     emailService.sendPlainEmail(to, subject, body);

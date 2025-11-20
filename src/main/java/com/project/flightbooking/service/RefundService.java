@@ -40,6 +40,7 @@ public class RefundService {
     private final PaymentRepository paymentRepository;
     private final RefundRepository refundRepository;
     private final FlightRepository flightRepository;
+    private final EmailService emailService;
 
     @Value("${razorpay.key_id}")
     private String razorpayKeyId;
@@ -50,11 +51,13 @@ public class RefundService {
     public RefundService(BookingRepository bookingRepository,
                          PaymentRepository paymentRepository,
                          RefundRepository refundRepository,
-                         FlightRepository flightRepository) {
+                         FlightRepository flightRepository,
+                         EmailService emailService) {
         this.bookingRepository = bookingRepository;
         this.paymentRepository = paymentRepository;
         this.refundRepository = refundRepository;
         this.flightRepository = flightRepository;
+        this.emailService = emailService;
     }
 
     /**
@@ -120,6 +123,25 @@ public class RefundService {
         rt.setAmount(refundAmount);
         rt.setStatus(RefundStatus.INITIATED);
         refundRepository.save(rt);
+
+        // Sending Email for Refund Initiation
+        try {
+            String to = booking.getUser().getEmail();
+            String subject = "Refund initiated — " + booking.getBookingRef();
+            String body = new StringBuilder()
+                    .append("Hi ").append(booking.getUser().getUsername()).append(",\n\n")
+                    .append("We have received your refund request for booking ").append(booking.getBookingRef()).append(".\n")
+                    .append("Requested amount: ").append(refundAmount).append("\n")
+                    .append("Status: INITIATED\n\n")
+                    .append("You will receive another email once refund is processed.\n\n")
+                    .append("Regards,\nAppName")
+                    .toString();
+
+            emailService.sendPlainEmail(to, subject, body);
+        } catch (Exception e) {
+            // swallow/log if exception is encountered
+            System.err.println("Failed to send refund-initiated email: " + e.getMessage());
+        }
 
         // Call Razorpay refund API
         RazorpayClient client = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
@@ -206,6 +228,27 @@ public class RefundService {
                 } else {
                     System.out.println("Booking has no linked flight for refund seat restore: " + booking.getBookingRef());
                 }
+
+                // Send Refund Confirmation Email
+                try {
+                    Booking b = rt.getBooking();
+                    String to = b.getUser().getEmail();
+                    String subject = "Refund processed — " + b.getBookingRef();
+                    String body = new StringBuilder()
+                            .append("Hi ").append(b.getUser().getUsername()).append(",\n\n")
+                            .append("Your refund has been processed.\n")
+                            .append("Booking: ").append(b.getBookingRef()).append("\n")
+                            .append("Refund amount: ").append(rt.getAmount()).append("\n")
+                            .append("Provider refund ID: ").append(providerRefundId).append("\n\n")
+                            .append("It may take a 5-7 business days to reflect in your account.\n\n")
+                            .append("Regards,\nAppName")
+                            .toString();
+
+                    emailService.sendPlainEmail(to, subject, body);
+                } catch (Exception e) {
+                    System.err.println("Failed to send refund-success email: " + e.getMessage());
+                }
+
             } else {
                 System.out.println("Booking already REFUNDED, skipping seat restore for: " + booking.getBookingRef());
             }

@@ -47,6 +47,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
+      <!-- mail service -->
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-mail</artifactId>
+      </dependency>
       <!-- Razorpay Java SDK -->
       <dependency>
           <groupId>com.razorpay</groupId>

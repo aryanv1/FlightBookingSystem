@@ -32,6 +32,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
     private final FlightRepository flightRepository; // Added to persist seat restoration on payment failure
+    private final EmailService emailService;
 
     // These @Value annotations pull your secret keys from application.properties
     @Value("${razorpay.key_id}")
@@ -42,10 +43,12 @@ public class PaymentService {
 
     public PaymentService(PaymentRepository paymentRepository,
                           BookingRepository bookingRepository,
-                          FlightRepository flightRepository) {
+                          FlightRepository flightRepository,
+                          EmailService emailService) {
         this.paymentRepository = paymentRepository;
         this.bookingRepository = bookingRepository;
         this.flightRepository = flightRepository;
+        this.emailService = emailService;
     }
 
     /**
@@ -123,6 +126,22 @@ public class PaymentService {
         booking.setPaymentStatus(PaymentStatus.SUCCESS);
         bookingRepository.save(booking);
 
+        // 4. Send Email
+        String to = booking.getUser().getEmail();
+        String subject = "Payment received — " + booking.getBookingRef();
+        String body = new StringBuilder()
+                .append("Hi ").append(booking.getUser().getUsername()).append(",\n\n")
+                .append("Your payment was successful.\n")
+                .append("Booking: ").append(booking.getBookingRef()).append("\n")
+                .append("Flight: ").append(booking.getFlight().getFlightNumber()).append("\n")
+                .append("Seats booked: ").append(booking.getSeatCount()).append("\n")
+                .append("Amount: ").append(booking.getTotalFare()).append("\n")
+                .append("Payment ID: ").append(paymentId).append("\n\n")
+                .append("Thank you,\nAppName")
+                .toString();
+
+        emailService.sendPlainEmail(to, subject, body);
+
         System.out.println("Booking " + booking.getBookingRef() + " confirmed successfully.");
     }
 
@@ -164,6 +183,21 @@ public class PaymentService {
         } else {
             System.out.println("Warning: No flight found for failed booking!");
         }
+
+        // 5. Send Email
+        String to = booking.getUser().getEmail();
+        String subject = "Payment failed — " + booking.getBookingRef();
+        String body = new StringBuilder()
+                .append("Hi ").append(booking.getUser().getUsername()).append(",\n\n")
+                .append("Your payment attempt failed.\n")
+                .append("Booking: ").append(booking.getBookingRef()).append("\n")
+                .append("Flight: ").append(booking.getFlight().getFlightNumber()).append("\n")
+                .append("Seats reserved (released): ").append(booking.getSeatCount()).append("\n")
+                .append("Please try booking again.\n\n")
+                .append("Regards,\nAppName")
+                .toString();
+
+        emailService.sendPlainEmail(to, subject, body);
 
         System.out.println("Booking " + booking.getBookingRef() + " cancelled due to payment failure.");
     }

@@ -11,6 +11,7 @@ It includes:
 * Concurrency-safe seat reservation & booking workflow
 * Razorpay payment integration (order, capture, failure)
 * Refund workflow (idempotent + webhook-driven)
+* Reconciliation API for long downtime of server
 * Email notifications (payment success, payment failure, refund events)
 * Clean layered architecture with DTO mapping
 * Fully modular, extensible, and scalable backend
@@ -125,7 +126,7 @@ It includes:
 ### 4. Booking Engine
 
    * Pessimistic locking → prevents overbooking
-   * Seat reservation (PENDING)
+   * Seat reservation
    * Automatic seat release on payment failure
    * Booking confirmations and fetch APIs
 
@@ -197,4 +198,4 @@ It includes:
 1.	Call /api/refunds/initiate/{bookingRef}
 2.	Razorpay → refund webhook
 3.	Booking becomes REFUNDED
-4.	Seats restored`
+4.	Seats restored

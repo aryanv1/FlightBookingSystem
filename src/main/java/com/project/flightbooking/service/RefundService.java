@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/**
+/*
  * RefundService
  *
  * Responsibilities:
@@ -60,7 +60,7 @@ public class RefundService {
         this.emailService = emailService;
     }
 
-    /**
+    /*
      * Default refund policy (hardcoded tiers).
      * Returns refund fraction (0.0 - 1.0).
      */
@@ -73,10 +73,11 @@ public class RefundService {
         return BigDecimal.ZERO; // flight departed
     }
 
-    /**
+    /*
      * Initiate refund for bookingRef.
      * This method is idempotent:
-     *  - If a RefundTransaction already exists for the booking in INITIATED/PROCESSING/SUCCESS, it returns that record or throws on impossible states.
+     *  - If a RefundTransaction already exists for the booking in INITIATED/PROCESSING/SUCCESS,
+     *    it returns that record or throws on impossible states.
      */
     @Transactional
     public RefundTransaction initiateRefund(String bookingRef) throws Exception {
@@ -143,30 +144,41 @@ public class RefundService {
             System.err.println("Failed to send refund-initiated email: " + e.getMessage());
         }
 
-        // Call Razorpay refund API
+        // Call Razorpay API
         RazorpayClient client = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
 
+        // This JSON object will be sent to razorpay via request body
+        // This eventually becomes:
+        // POST https://api.razorpay.com/v1/payments/{paymentId}/refund
+        //  Body: req JSON
         JSONObject req = new JSONObject();
         req.put("amount", refundAmount.multiply(BigDecimal.valueOf(100)).intValueExact()); // Razorpay expects paise
+        // intValueExact -> converts BigDecimal to int
         req.put("speed", "normal");
+        // normal → usually 2–7 business days
+        // optimum → the fastest possible (additional cost to merchant)
         req.put("notes", new JSONObject().put("bookingRef", bookingRef));
+        // attach custom metadata to the refund on Razorpay’s side.
+        // bookingRef will help us to track for which booking we are giving refund
 
         try {
+            // Call Razorpay refund API
+            // Endpoint internally hits:
+            // POST https://api.razorpay.com/v1/payments/{payment_id}/refund
+            // Does not immediately refund money, it may take from minutes to days
             Refund refund = client.Payments.refund(payment.getProviderPaymentId(), req);
 
             // Update RefundTransaction from provider response
             rt.setProviderRefundId(refund.get("id"));
             rt.setStatus(RefundStatus.PROCESSING); // provider accepted request; final success via webhook
             rt.setProviderResponse(refund.toString());
+            // For auditing/debugging -> If user says I didn't receive refund, then we can check from here
             refundRepository.save(rt);
-
-            // Optionally mark booking CANCELLED (if not already)
-            booking.setStatus(BookingStatus.CANCELLED);
-            bookingRepository.save(booking);
 
             System.out.println("Refund initiated: providerRefundId=" + refund.get("id") + ", booking=" + bookingRef);
             return rt;
         } catch (RazorpayException e) {
+            // Executes when razorpay rejects refund request
             rt.setStatus(RefundStatus.FAILED);
             rt.setProviderResponse(e.getMessage());
             refundRepository.save(rt);
@@ -176,7 +188,7 @@ public class RefundService {
         }
     }
 
-    /**
+    /*
      * Handle refund webhook from provider (idempotent).
      * providerRefundId: Razorpay refund id from webhook payload.
      * eventPayload: raw JSON for auditing.

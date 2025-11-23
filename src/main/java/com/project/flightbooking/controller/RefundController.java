@@ -15,7 +15,7 @@ public class RefundController {
         this.refundService = refundService;
     }
 
-    /**
+    /*
      * Initiate a refund for a bookingRef.
      * This endpoint is idempotent: calling multiple times returns the existing refund in progress.
      */

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/admin/flights")
 public class AdminFlightController {
@@ -22,7 +24,6 @@ public class AdminFlightController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     // ensure only ADMIN can call; SecurityConfig + @EnableMethodSecurity allows @PreAuthorize
-    // If you want a method-level guard, add: @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FlightResponse> createFlight(@RequestBody FlightRequest request) {
         Flight f = flightService.createFlight(request);
         FlightResponse resp = toResponse(f);
@@ -31,9 +32,19 @@ public class AdminFlightController {
 
     @GetMapping("/{id}")
     public ResponseEntity<FlightResponse> getFlight(@PathVariable Long id) {
-        return flightService.findById(id)
-                .map(f -> ResponseEntity.ok(toResponse(f)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        // return flightService.findById(id)
+        //        .map(f -> ResponseEntity.ok(toResponse(f)))
+        //       .orElseGet(() -> ResponseEntity.notFound().build());
+        Optional<Flight> optional = flightService.findById(id);
+
+        if(optional.isPresent()) {
+            Flight f = optional.get();
+            return ResponseEntity.ok(toResponse(f));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+        // If flight is found then maps to dto flight response
+        // Else thore 404 Not Found error
     }
 
     private FlightResponse toResponse(Flight f) {

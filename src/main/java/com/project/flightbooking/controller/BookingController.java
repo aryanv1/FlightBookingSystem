@@ -22,6 +22,15 @@ public class BookingController {
      * Reserve seats (creates a PENDING booking and decrements flight remaining seats).
      * Requires authenticated user.
      */
+    /*
+        @AuthenticationPrincipal UserDetails
+        This means:
+        1. We don’t need to send username in request
+        2. We don’t need to query database again
+        3. We trust the identity from security
+
+        For E.g. If token belongs to user: aryan (from Security layer), then username = aryan
+     */
     @PostMapping
     public ResponseEntity<BookingResponse> createBooking(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -33,7 +42,7 @@ public class BookingController {
         return ResponseEntity.ok(resp);
     }
 
-    /**
+    /*
      * Confirm after payment success (mock). In real flow this is invoked by payment gateway webhook
      */
     @PostMapping("/{bookingRef}/confirm")

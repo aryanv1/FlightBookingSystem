@@ -31,11 +31,13 @@ public class FlightController {
         List<Flight> flights = flightService.findAll();
 
         List<FlightResponse> response = flights.stream()
+                // Maps every flight with flightResponse Dto by adjusting the fare
                 .map(flight -> {
                     BigDecimal dynamicFare = pricingService.calculateDynamicFare(flight);
                     return toFlightResponse(flight, dynamicFare);
                 })
                 .collect(Collectors.toList());
+                // Collects result back to list
 
         return ResponseEntity.ok(response);
     }
@@ -46,6 +48,7 @@ public class FlightController {
     @GetMapping("/{id}")
     public ResponseEntity<FlightResponse> getFlight(@PathVariable Long id) {
         return flightService.findById(id)
+                // Maps each flight with adjusted fare Dto
                 .map(flight -> {
                     BigDecimal dynamicFare = pricingService.calculateDynamicFare(flight);
                     FlightResponse dto = toFlightResponse(flight, dynamicFare);

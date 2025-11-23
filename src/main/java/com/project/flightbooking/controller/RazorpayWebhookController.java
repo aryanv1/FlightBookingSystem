@@ -15,12 +15,47 @@ import javax.crypto.spec.SecretKeySpec;
  * --------------------------
  * Handles webhooks (server-to-server callbacks) sent by Razorpay
  * after a payment succeeds or fails.
- *
+
  *  Flow:
  *  - Razorpay sends a POST to /api/payments/webhook
  *  - Verify signature using HMAC SHA256 (HEX format)
  *  - Parse event type and call appropriate PaymentService method
  */
+
+/*
+    Webhook - A webhook is a server-to-server callback mechanism where one system automatically
+    sends an HTTP request (usually POST) to another system when a specific event occurs,
+    without the receiving system having to request or poll for it.
+    Razorpay sends POST request like this:
+        POST https://yourdomain/api/payments/webhook
+        Headers:
+        X-Razorpay-Signature: <hash>
+
+        Body:
+        { "event": "payment.captured", ... }
+    -> Backend cannot rely on frontend for making payment as SUCCESS.
+    -> Since Backend can be hacked as well -> frontend can fake “payment success”
+    -> So the webhook is more authoritative than anything the user sends.
+ */
+ /*
+    If by any reason our spring server is down and Razorpay sends the webhook
+    What will happen?
+    -> Razorpay will try sending that webhook multiple times
+    -> Its frequency of sending is:
+        0 seconds (immediate)
+        3 minutes
+        10 minutes
+        1 hour
+        24 hours
+        48 hours
+
+     -> Now what if the server is down for more than 48hrs?
+     -> In this case we must build a periodic reconciliation API / cron job like:
+        a. GET /api/payments/reconcile/{orderId}
+        b. GET /payments/{payment_id} -> Calls razorpay API to get the status of that payment
+     -> We can call this for the payments which are initiated and not Successful
+ */
+
 @RestController
 @RequestMapping("/api/payments")
 public class RazorpayWebhookController {
@@ -41,7 +76,9 @@ public class RazorpayWebhookController {
     public ResponseEntity<String> handleWebhook(
             @RequestHeader("X-Razorpay-Signature") String signature, // Razorpay's cryptographic signature
             @RequestBody String payload) { // Raw JSON body (the entire event)
-
+        // Razorpay Signs the payload with:
+        // HMAC_SHA256( payload, webhookSecret )
+        // We recompute the same hash and compare it.
         try {
             // 1. SECURITY: Verify authenticity of the payload
             if (!verifySignature(payload, signature, webhookSecret)) {
@@ -95,7 +132,7 @@ public class RazorpayWebhookController {
         }
     }
 
-    /**
+    /*
      * verifySignature()
      * -----------------
      * Ensures that the webhook was genuinely sent by Razorpay
@@ -111,7 +148,7 @@ public class RazorpayWebhookController {
         return generatedSignature.equals(expectedSignature);
     }
 
-    /**
+    /*
      * Helper: Converts bytes to lowercase hexadecimal string.
      */
     private String bytesToHex(byte[] bytes) {

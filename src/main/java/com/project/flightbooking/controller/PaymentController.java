@@ -15,6 +15,9 @@ public class PaymentController {
     }
 
     @PostMapping("/create/{bookingRef}")
+    // Tell Razorpay: “I want to collect this money”
+    // Razorpay returns an order_id
+    // Your backend stores this payment attempt
     public ResponseEntity<String> createPaymentOrder(@PathVariable String bookingRef) {
         try {
             JSONObject response = paymentService.createRazorpayOrder(bookingRef);

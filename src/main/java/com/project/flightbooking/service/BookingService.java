@@ -76,7 +76,7 @@ public class BookingService {
         return booking;
     }
 
-    /**
+    /*
      * Confirm booking (simulate payment). This should be called after payment success or webhook.
      */
     @Transactional

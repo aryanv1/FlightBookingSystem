@@ -62,6 +62,7 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found: " + bookingRef));
 
         // 2. Create the official Razorpay client object with your keys
+        // RazorpayClient is the Java SDK’s main entry point for calling Razorpay APIs.
         RazorpayClient client = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
 
         // 3. Prepare the order details
@@ -69,25 +70,42 @@ public class PaymentService {
         // Razorpay (and most gateways) requires the amount in the smallest currency unit
         // Example: 100.50 Rupees becomes 10050 paise.
         int amountInPaise = amount.multiply(BigDecimal.valueOf(100)).intValueExact();
+        // We are using BigDecimal instead of Double because double has floating point rounding issues
+        // intValueExact(): Converts to int, but throws an exception if there is any fractional part.
+        // Ensures amount has at most 2 decimal places
 
         // 4. Build the JSON "order request" object
         JSONObject orderRequest = new JSONObject();
         orderRequest.put("amount", amountInPaise);
+        // Razorpay uses this as the order amount.
         orderRequest.put("currency", "INR");
-        orderRequest.put("receipt", bookingRef); // Your internal booking ref as the receipt ID
-        orderRequest.put("payment_capture", 1); // Auto-capture the payment
+        // Razorpay supports multiple currencies; we specify INR here.
+        orderRequest.put("receipt", bookingRef); // Our internal booking ref as the receipt ID
+        orderRequest.put("payment_capture", 1); // Auto-capture the payment once authorized
+        // If set to 0, we’d have to explicitly capture later.
 
         // 5. Actually create the order by calling Razorpay's API
         Order order = client.Orders.create(orderRequest);
+        // This line sends an HTTP POST to Razorpay:
+        // URL: https://api.razorpay.com/v1/orders
+        // Body: orderRequest JSON
+        // Auth: uses key_id + key_secret
+        // Razorpay respond with JSON
+        // The SDK wraps that JSON into an Order object
 
         // 6. CRITICAL: Save a record of this payment attempt in YOUR database
+        // Here we are storing order_id because later we will get only:
+        // order_id, payment_id, status from webhook
+        // So we need to know which order this payment belongs to
         Payment p = new Payment();
         p.setBooking(booking);
         p.setProviderOrderId(order.get("id")); // Save Razorpay's Order ID
+        // This ID is what the frontend uses when opening the Razorpay checkout.
         p.setAmount(amount);
         p.setStatus(PaymentStatus.INITIATED); // Mark as INITIATED
         p.setCurrency("INR");
         p.setProviderResponse(order.toString()); // Save the full response for debugging
+        // Saves the raw JSON response from Razorpay.
         paymentRepository.save(p);
 
         System.out.println("Created Razorpay Order: " + order.get("id") + " for Booking: " + bookingRef);
@@ -101,9 +119,10 @@ public class PaymentService {
         response.put("bookingRef", bookingRef);
 
         return response;
+        // Frontend uses: razorpayOrderId, key, amount to display Razorpay popup
     }
 
-    /**
+    /*
      * Method 2: Marks payment as SUCCESS after Razorpay webhook notifies success.
      * Updates booking status -> CONFIRMED.
      */
@@ -145,7 +164,7 @@ public class PaymentService {
         System.out.println("Booking " + booking.getBookingRef() + " confirmed successfully.");
     }
 
-    /**
+    /*
      * Method 3: Marks payment as FAILED after webhook or user failure.
      * Rolls back booking and restores seats to flight inventory.
      */

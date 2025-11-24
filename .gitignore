@@ -1,6 +1,7 @@
 # Ignore application properties with secrets
 src/main/resources/application.properties
 target/
+.env
 
 # Optional: also ignore any local env or config files
 *.env

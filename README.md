@@ -15,6 +15,7 @@ It includes:
 * Email notifications (payment success, payment failure, refund events)
 * Clean layered architecture with DTO mapping
 * Fully modular, extensible, and scalable backend
+* Swagger to document the APIs
 
 ## **🛠️ Tech Stack**
 

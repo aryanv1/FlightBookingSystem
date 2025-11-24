@@ -20,3 +20,12 @@ public class SwaggerConfig {
                         .license(new License().name("Apache 2.0")) );
     }
 }
+
+// Link: http://localhost:8080/swagger-ui/index.html -> If running locally
+// We use swagger for:
+// 1. API documentation
+// 2. API discoverability
+// 3. Developer testing (instead of building UI)
+// 4. Demonstration for resume/interviews
+// 5. Postman replacement for simple flows
+// Swagger only documents and calls APIs.

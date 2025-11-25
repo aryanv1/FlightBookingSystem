@@ -201,4 +201,13 @@ It includes:
 3.	Booking becomes REFUNDED
 4.	Seats restored
 
+## **🐳 Docker Setup**
+#### Build the Docker Image
+
+    docker build -t flight-booking-system .
+
+#### Run the Container
+
+    docker run -p 8080:8080 flight-booking-system
+
 ##### Documentation Link: [click here](https://docs.google.com/document/d/1W7a7zwTFA0Mlb2NEfFvfgNDPYCbVu1gYTLfQo3MlqK4/edit?usp=sharing)
